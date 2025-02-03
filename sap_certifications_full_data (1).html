@@ -1,0 +1,2098 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAP Certification Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            margin: auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🎓 SAP Certification Finder</h2>
+        <p>Select criteria to filter the certifications.</p>
+
+        <label for="industry">Industry:</label>
+        <select id="industry" onchange="filterTable()">
+            <option value="All">All</option>
+        </select>
+
+        <label for="role">Role:</label>
+        <select id="role" onchange="filterTable()">
+            <option value="All">All</option>
+        </select>
+
+        <label for="experience">Experience Level:</label>
+        <select id="experience" onchange="filterTable()">
+            <option value="All">All</option>
+        </select>
+
+        <table id="certTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Industry</th>
+                    <th>Role</th>
+                    <th>Experience Level</th>
+                    <th>Code</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Certification data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // SAP Certification Data (Embedded from JSON)
+        const certifications = [
+    {
+        "S.no":1,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP S_4HANA, Cloud Public Edition, Sales",
+        "Associated Product Solution":"SAP S_4HANA, Cloud Public Edition, Sales",
+        "Code":"C_S4CS",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP ",
+        "Product Sub Type Or Solution Sub Type":"Sales Module ",
+        "Industry\/Technology  Domain":"Sales",
+        "Industry\/Technology  Domain(Summarized)":"Sales",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":2,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP S_4HANA",
+        "Associated Product Solution":"SAP S_4HANA",
+        "Code":"C_S4CPB",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP ",
+        "Product Sub Type Or Solution Sub Type":"ERP Core",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":3,
+        "Name":" SAP Certified Associate - SAP S_4HANA System Administration",
+        "Associated Product Solution":"SAP S_4HANA ",
+        "Code":"C_TADM",
+        "Role_SAP":"Administrator",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP ",
+        "Product Sub Type Or Solution Sub Type":"System Administration",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (No Code)",
+        "R3_Sub Role":"Technical(No Code) - Adminsitration - Application",
+        "Industry Sub Role":"Administration - Application "
+    },
+    {
+        "S.no":4,
+        "Name":" SAP Certified Associate - Data Engineer - SAP HANA",
+        "Associated Product Solution":"SAP HANA",
+        "Code":"C_HAMOD",
+        "Role_SAP":"Data Scientist",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP HANA",
+        "Product\/ Task Type Or Solution Type":"Database Platform",
+        "Product Sub Type Or Solution Sub Type":"Data Modelling ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Data Modeling",
+        "Industry Sub Role":"Data Scientist, Data Engineer"
+    },
+    {
+        "S.no":5,
+        "Name":" SAP Certified Associate - Integration Developer",
+        "Associated Product Solution":"SAP BTP",
+        "Code":"C_CPI",
+        "Role_SAP":"Developer",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP BTP",
+        "Product\/ Task Type Or Solution Type":"Enterprise Cloud Platform",
+        "Product Sub Type Or Solution Sub Type":"Cloud Integration",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Developer (Code)",
+        "R3_Sub Role":"Developer - Cloud Intergration ",
+        "Industry Sub Role":"Cloud Integration Developer"
+    },
+    {
+        "S.no":6,
+        "Name":" SAP Certified Associate - SAP Fieldglass Services Procurement",
+        "Associated Product Solution":"SAP Fieldglass ",
+        "Code":"C_TFG61",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Fieldglass",
+        "Product\/ Task Type Or Solution Type":"Vendor Management System",
+        "Product Sub Type Or Solution Sub Type":"Services Procurement",
+        "Industry\/Technology  Domain":"Supply Chain ",
+        "Industry\/Technology  Domain(Summarized)":"Supply Chain ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Configuration, Integration, Analytics and Administration"
+    },
+    {
+        "S.no":7,
+        "Name":" SAP Certified Professional - Developer - SAP Commerce Cloud",
+        "Associated Product Solution":"SAP Commerce Cloud",
+        "Code":"P_C4H34",
+        "Role_SAP":"Developer",
+        "Experience Level":"Professional ",
+        "Level _SAP":"Certified Professional ",
+        "Product\/ Task Family Or Solution Group":" SAP Commerce Cloud",
+        "Product\/ Task Type Or Solution Type":"E-Commerce Solution",
+        "Product Sub Type Or Solution Sub Type":"E-Commerce Solution",
+        "Industry\/Technology  Domain":"Retail and E-Commerce",
+        "Industry\/Technology  Domain(Summarized)":"Retail and E-Commerce",
+        "R3_ Role":"Developer (Code)",
+        "R3_Sub Role":"Developer - Cloud ",
+        "Industry Sub Role":"Cloud Developer"
+    },
+    {
+        "S.no":8,
+        "Name":" SAP Certified Associate - Design Thinking",
+        "Associated Product Solution":"SAP Design Thinking",
+        "Code":"C_THINK",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Design Thinking",
+        "Product\/ Task Type Or Solution Type":"Methodology, tool and Best Practices ",
+        "Product Sub Type Or Solution Sub Type":"To discover and build innovative products and services",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Management ",
+        "R3_Sub Role":"Management - Product",
+        "Industry Sub Role":"Product Management "
+    },
+    {
+        "S.no":9,
+        "Name":" SAP Certified Associate - SAP Fieldglass Contingent Workforce Management",
+        "Associated Product Solution":"SAP Fieldglass ",
+        "Code":"C_TFG51",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Fieldglass",
+        "Product\/ Task Type Or Solution Type":"Vendor Management System",
+        "Product Sub Type Or Solution Sub Type":"Workforce Management ",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Configuration, Integration, Analytics and Administration"
+    },
+    {
+        "S.no":10,
+        "Name":" SAP Certified Associate - SAP S_4HANA Project Systems",
+        "Associated Product Solution":"SAP S_4HANA Project Systems",
+        "Code":"C_TS412",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP ",
+        "Product Sub Type Or Solution Sub Type":"Project and Program Management ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Management ",
+        "R3_Sub Role":"Management - Program\/Protfolio",
+        "Industry Sub Role":"Project Management"
+    },
+    {
+        "S.no":11,
+        "Name":" SAP Certified Associate - SAP HCM for S_4HANA S4HANA",
+        "Associated Product Solution":"SAP HCM for S_4HANA S4HANA",
+        "Code":"C_THR12",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP ",
+        "Product Sub Type Or Solution Sub Type":"Human Capital Management",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use and Configuration"
+    },
+    {
+        "S.no":12,
+        "Name":" SAP Certified Specialist - SAP S_4HANA Cloud Private Edition, implementation with SAP Activate",
+        "Associated Product Solution":"SAP S_4HANA Cloud Private Edition",
+        "Code":"E_S4CPE",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Experience ",
+        "Level _SAP":"Certified Specialist ",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"Methodology, tool and Best Practices ",
+        "Product Sub Type Or Solution Sub Type":"Implementation of S\/4HANA Cloud",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Management ",
+        "R3_Sub Role":"Management - Program\/Protfolio",
+        "Industry Sub Role":"Technology Implementation and Project Management"
+    },
+    {
+        "S.no":13,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Sales Cloud",
+        "Associated Product Solution":"SAP Sales Cloud",
+        "Code":"C_C4H41",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Sales Cloud",
+        "Product\/ Task Type Or Solution Type":"Sales Managament ",
+        "Product Sub Type Or Solution Sub Type":"Enablement, Automation and Prediction",
+        "Industry\/Technology  Domain":"Sales",
+        "Industry\/Technology  Domain(Summarized)":"Sales",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Administration - Application "
+    },
+    {
+        "S.no":14,
+        "Name":" SAP Certified Associate - SAP Business ByDesign Implementation Consultant",
+        "Associated Product Solution":"SAP Business ByDesign",
+        "Code":"C_BYD15",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Business ByDesign",
+        "Product\/ Task Type Or Solution Type":"ERP ",
+        "Product Sub Type Or Solution Sub Type":"Small and Midsize _ Customizable",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":15,
+        "Name":" SAP Certified Associate - SAP Billing and Revenue Innovation Management ",
+        "Associated Product Solution":"SAP Billing and Revenue Innovation Management (BRIM)",
+        "Code":"C_BRU2C",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Billing and Revenue(BRIM)",
+        "Product\/ Task Type Or Solution Type":"Billing and Revenue Management ",
+        "Product Sub Type Or Solution Sub Type":"Recurring and Usage based billing solution",
+        "Industry\/Technology  Domain":"Finance ",
+        "Industry\/Technology  Domain(Summarized)":"Finance ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":16,
+        "Name":" SAP Certified Associate - SAP Billing and Revenue Innovation Management ",
+        "Associated Product Solution":"SAP Billing and Revenue Innovation Management (BRIM)",
+        "Code":"C_BRSOM",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Billing and Revenue(BRIM)",
+        "Product\/ Task Type Or Solution Type":"Billing and Revenue Management ",
+        "Product Sub Type Or Solution Sub Type":"Recurring and Usage based billing solution",
+        "Industry\/Technology  Domain":"Finance",
+        "Industry\/Technology  Domain(Summarized)":"Finance",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":17,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Service Cloud",
+        "Associated Product Solution":"SAP Service SAP Service Cloud",
+        "Code":"C_C4H51",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":" SAP Service Cloud",
+        "Product\/ Task Type Or Solution Type":"CRM",
+        "Product Sub Type Or Solution Sub Type":"CRM",
+        "Industry\/Technology  Domain":"Service ",
+        "Industry\/Technology  Domain(Summarized)":"Service ",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":18,
+        "Name":" SAP Certified Associate - SAP HCM Payroll for SAP S4HANA",
+        "Associated Product Solution":"SAP HCM Payroll for SAP S4HANA",
+        "Code":"C_HCMP",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Human Capital Management",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Use and Configuration"
+    },
+    {
+        "S.no":19,
+        "Name":" SAP Certified Associate - Backend Developer - SAP Cloud Application model",
+        "Associated Product Solution":"SAP S\/4HANA on BTP",
+        "Code":"C_CPE",
+        "Role_SAP":"Developer",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Cloud Application model",
+        "Product\/ Task Type Or Solution Type":"Architecture, Design and Development ",
+        "Product Sub Type Or Solution Sub Type":"Architecture, Design and Development ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Developer (Code)",
+        "R3_Sub Role":"Developer - Cloud Back End",
+        "Industry Sub Role":"Cloud Developer"
+    },
+    {
+        "S.no":20,
+        "Name":" SAP Certified Associate - Solution Architect - Customer Experience",
+        "Associated Product Solution":" SAP Customer Experience solutions on BTP",
+        "Code":"C_C4HCX",
+        "Role_SAP":"Architect",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"Customer Experience",
+        "Product\/ Task Type Or Solution Type":"Architecture, Design and Development ",
+        "Product Sub Type Or Solution Sub Type":"Architecture, Design and Development ",
+        "Industry\/Technology  Domain":"Customer Experience",
+        "Industry\/Technology  Domain(Summarized)":"Customer Experience",
+        "R3_ Role":"Architecture ",
+        "R3_Sub Role":"Achitecture - Solution Architecture",
+        "Industry Sub Role":"Solution Architecture "
+    },
+    {
+        "S.no":21,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Service V2",
+        "Associated Product Solution":"SAP Service Cloud Version 2",
+        "Code":"C_C4H56",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Service Cloud ",
+        "Product\/ Task Type Or Solution Type":"CRM",
+        "Product Sub Type Or Solution Sub Type":"CRM",
+        "Industry\/Technology  Domain":"Service",
+        "Industry\/Technology  Domain(Summarized)":"Service",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":22,
+        "Name":" SAP Certified Associate - SAP Master Data Governance",
+        "Associated Product Solution":"SAP Master Data Governance",
+        "Code":"C_MDG",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Master Data Governance",
+        "Product\/ Task Type Or Solution Type":"Master Data Management ",
+        "Product Sub Type Or Solution Sub Type":"Master Data Management ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Data Management",
+        "Industry Sub Role":"Technology Configuration and Administation"
+    },
+    {
+        "S.no":23,
+        "Name":" SAP Certified Associate - SAP Field Service Management",
+        "Associated Product Solution":" SAP Field Service Management",
+        "Code":"C_FSM",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Field Service Management",
+        "Product\/ Task Type Or Solution Type":"Field service management ",
+        "Product Sub Type Or Solution Sub Type":"Field service management ",
+        "Industry\/Technology  Domain":"Field Service ",
+        "Industry\/Technology  Domain(Summarized)":"Service",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":24,
+        "Name":" SAP Certified Associate - SAP S_4HANA Portfolio and Project Management",
+        "Associated Product Solution":"SAP S_4HANA Portfolio and Project Management",
+        "Code":"C_S4PPM",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Portfolio and Project Management",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Management ",
+        "R3_Sub Role":"Management - Program\/Protfolio",
+        "Industry Sub Role":"Technology Implementation and Project Management "
+    },
+    {
+        "S.no":25,
+        "Name":" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Financial accounting",
+        "Associated Product Solution":"SAP S_4HANA Cloud Private Edition, Financial accounting",
+        "Code":"C_TS4FI",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Financial Accounting",
+        "Industry\/Technology  Domain":"Accounting",
+        "Industry\/Technology  Domain(Summarized)":"Accounting",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":26,
+        "Name":" SAP Certified Associate - SAP S_4HANA for Management Accounting for Associates",
+        "Associated Product Solution":" SAP S_4HANA for Management Accounting for Associates",
+        "Code":"C_TS4CO",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Management Accounting",
+        "Industry\/Technology  Domain":"Accounting",
+        "Industry\/Technology  Domain(Summarized)":"Accounting",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":27,
+        "Name":" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Quality Management",
+        "Associated Product Solution":"SAP S_4HANA Cloud Private Edition, Quality Management",
+        "Code":"C_TS414",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Quality Management",
+        "Industry\/Technology  Domain":"Quality ",
+        "Industry\/Technology  Domain(Summarized)":"Quality ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":28,
+        "Name":" SAP Certified Specialist - Project Manager - SAP Activate for Agile implementation management",
+        "Associated Product Solution":"SAP Activate for Agile implementation management",
+        "Code":"E_ACTAI",
+        "Role_SAP":"Project Manager",
+        "Experience Level":"Professional ",
+        "Level _SAP":"Certified Specialist ",
+        "Product\/ Task Family Or Solution Group":"SAP Activate",
+        "Product\/ Task Type Or Solution Type":"Implementation Framework",
+        "Product Sub Type Or Solution Sub Type":"Implementation Framework",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Management ",
+        "R3_Sub Role":"Management - Project",
+        "Industry Sub Role":"Project Management"
+    },
+    {
+        "S.no":29,
+        "Name":" SAP Certified Specialist - SAP BW_4HANA Delta",
+        "Associated Product Solution":"SAP BW_4HANA",
+        "Code":"E_BW4HE",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Professional ",
+        "Level _SAP":"Certified Specialist ",
+        "Product\/ Task Family Or Solution Group":"SAP BW_4HANA",
+        "Product\/ Task Type Or Solution Type":"Business Warehouse ",
+        "Product Sub Type Or Solution Sub Type":"Business Warehouse ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Data Warehousing",
+        "Industry Sub Role":"Business Warehourse "
+    },
+    {
+        "S.no":30,
+        "Name":" SAP Certified Associate - Data Analyst - SAP Analytics Cloud",
+        "Associated Product Solution":"SAP Analytics Cloud",
+        "Code":"C_SAC",
+        "Role_SAP":"Data Analyst",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":" SAP Analytics Cloud",
+        "Product\/ Task Type Or Solution Type":"Reporting, Planning and Prediction ",
+        "Product Sub Type Or Solution Sub Type":"Reporting, Planning and Prediction ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (No Code)",
+        "R3_Sub Role":"Technical(No Code) - Reporting",
+        "Industry Sub Role":"Data Analyst "
+    },
+    {
+        "S.no":31,
+        "Name":" SAP Certified Associate - Business Process Integration with SAP S4HANA",
+        "Associated Product Solution":"SAP S4HANA",
+        "Code":"C_TS410",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"Business Process ",
+        "Product Sub Type Or Solution Sub Type":"Business Process identification and intergration in SAP  S\/4HANA",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Developer (Code)",
+        "R3_Sub Role":"Developer - Cloud Intergration ",
+        "Industry Sub Role":"Business Process Integeration "
+    },
+    {
+        "S.no":32,
+        "Name":" SAP Certified Associate - Database Administrator - SAP HANA",
+        "Associated Product Solution":"SAP HANA",
+        "Code":"C_DBADM",
+        "Role_SAP":"Administrator",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP HANA",
+        "Product\/ Task Type Or Solution Type":"Database Platform",
+        "Product Sub Type Or Solution Sub Type":"Database Platform",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Administration",
+        "Industry Sub Role":"Database Administration"
+    },
+    {
+        "S.no":33,
+        "Name":" SAP Certified Associate - SAP S_4HANA Sourcing and Procurement",
+        "Associated Product Solution":"SAP S_4HANA Sourcing and Procurement",
+        "Code":"C_TS452",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Sourcing and Procurement",
+        "Industry\/Technology  Domain":"Sourcing and Procurement",
+        "Industry\/Technology  Domain(Summarized)":"Sourcing and Procurement",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":34,
+        "Name":" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Sales",
+        "Associated Product Solution":"SAP S_4HANA Cloud Private Edition, Sales",
+        "Code":"C_TS462",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Sales Module ",
+        "Industry\/Technology  Domain":"Sales",
+        "Industry\/Technology  Domain(Summarized)":"Sales",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":35,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Customer Data Platform",
+        "Associated Product Solution":"SAP Customer Data Platform",
+        "Code":"C_C4H63",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Customer Data Platform",
+        "Product\/ Task Type Or Solution Type":"Customer Data Management ",
+        "Product Sub Type Or Solution Sub Type":"Customer Data Management ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":36,
+        "Name":" SAP Certified Professional - Financials in SAP S_4HANA for SAP Finance Experts",
+        "Associated Product Solution":"SAP S_4HANA",
+        "Code":"P_S4FIN",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Professional ",
+        "Level _SAP":"Certified Professional ",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"Financial Processes ",
+        "Product Sub Type Or Solution Sub Type":"Financial Processes identification and intergration in SAP  S\/4HANA ",
+        "Industry\/Technology  Domain":"Finance",
+        "Industry\/Technology  Domain(Summarized)":"Finance",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Domain and Product Expert",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":37,
+        "Name":" SAP Certified Associate - SAP SuccessFactors Incentive Management",
+        "Associated Product Solution":"SAP SuccessFactors Incentive Management",
+        "Code":"C_THR70",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Incentive Management",
+        "Industry\/Technology  Domain":"Incentive Management",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":38,
+        "Name":" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Central Finance",
+        "Associated Product Solution":"S_4HANA Cloud Private Edition, Central Finance",
+        "Code":"C_S4FCF",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Core Finance Module",
+        "Industry\/Technology  Domain":"Finance",
+        "Industry\/Technology  Domain(Summarized)":"Finance",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":39,
+        "Name":" SAP Certified Associate - SAP Build Work Zone - Implementation and admin",
+        "Associated Product Solution":"SAP Build Work Zone",
+        "Code":"C_WZADM",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Build Work Zone",
+        "Product\/ Task Type Or Solution Type":"Digital Workspaces and Collaboration Platform ",
+        "Product Sub Type Or Solution Sub Type":"Digital Workspaces and Collaboration Platform ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (No Code)",
+        "R3_Sub Role":"Technical(No Code) - Adminsitration - Application",
+        "Industry Sub Role":"Technology Implementation and Administration"
+    },
+    {
+        "S.no":40,
+        "Name":" SAP Certified Associate - SAP SuccessFactors Recruiting Recruiter Experience",
+        "Associated Product Solution":"SAP SuccessFactors Recruiting Recruiter Experience",
+        "Code":"C_THR83",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Recuruiting Experience ",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":41,
+        "Name":" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Treasury",
+        "Associated Product Solution":"SAP S_4HANA Cloud Private Edition, Treasury",
+        "Code":"C_S4FTR",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Treasury Module",
+        "Industry\/Technology  Domain":"Finance",
+        "Industry\/Technology  Domain(Summarized)":"Finance",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":42,
+        "Name":" SAP Certified Associate - SAP SuccessFactors Variable Pay",
+        "Associated Product Solution":"SAP SuccessFactors Variable Pay",
+        "Code":"C_THR87",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Pay Management module ",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":43,
+        "Name":" SAP Certified Associate - SAP SuccessFactors Recruiting_ Candidate",
+        "Associated Product Solution":"SAP SuccessFactors Recruiting_ Candidate",
+        "Code":"C_THR84",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Candidate Recruiting Module",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":44,
+        "Name":" SAP Certified Associate - SAP SuccessFactors Learning",
+        "Associated Product Solution":"SAP SuccessFactors Learning",
+        "Code":"C_THR88",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Learning Management Module",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":45,
+        "Name":" SAP Certified Associate - SAP SuccessFactors Compensation",
+        "Associated Product Solution":"SAP SuccessFactors Compensation",
+        "Code":"C_THR86",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Compensation Management Module",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":46,
+        "Name":" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Production Planning and Manufacturing",
+        "Associated Product Solution":"SAP S_4HANA Cloud Private Edition, Prod Production Planning and Manufacturing",
+        "Code":"C_TS422",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Production Planning and Manfacturing Module",
+        "Industry\/Technology  Domain":"Manufacturing",
+        "Industry\/Technology  Domain(Summarized)":"Manufacturing",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":47,
+        "Name":" SAP Certified Associate - Enterprise Architecture Consultant - SAP LeanIX",
+        "Associated Product Solution":"SAP LeanIX",
+        "Code":"C_LIXEA",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP LeanIX",
+        "Product\/ Task Type Or Solution Type":"Enterprise Architecture",
+        "Product Sub Type Or Solution Sub Type":"Enterprise Architecture Management Application",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Architecture ",
+        "R3_Sub Role":"Achitecture - Enterprise Architetcure Management ",
+        "Industry Sub Role":"Enterprise Architecture"
+    },
+    {
+        "S.no":48,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Business Network for Supply Chain",
+        "Associated Product Solution":"SAP Business Network for Supply Chain",
+        "Code":"C_ARSCC",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Business Network for Supply Chain",
+        "Product\/ Task Type Or Solution Type":"B2B Collboration Platform",
+        "Product Sub Type Or Solution Sub Type":"B2B Collboration Platform",
+        "Industry\/Technology  Domain":"Supply Chain",
+        "Industry\/Technology  Domain(Summarized)":"Supply Chain",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Configuration and Administation"
+    },
+    {
+        "S.no":49,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Customer Data Cloud",
+        "Associated Product Solution":"SAP Customer Data Cloud",
+        "Code":"C_C4H62",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Customer Data Cloud",
+        "Product\/ Task Type Or Solution Type":"Customer Identity, Access and Consent Management",
+        "Product Sub Type Or Solution Sub Type":"Customer Identity, Access and Consent Management",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":50,
+        "Name":" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Transport",
+        "Associated Product Solution":"SAP S_4HANA Cloud Private Edition, Transport",
+        "Code":"C_S4TM",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Transport Module",
+        "Industry\/Technology  Domain":"Transport",
+        "Industry\/Technology  Domain(Summarized)":"Transport",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Customization - Business Solution"
+    },
+    {
+        "S.no":51,
+        "Name":" SAP Certified Application Associate - SAP IBP for Supply Chain _ SAP Learning",
+        "Associated Product Solution":"SAP IBP for Supply Chain",
+        "Code":"C_IBP",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP IBP",
+        "Product\/ Task Type Or Solution Type":"Planning, Sales, Operations and  Forecasting",
+        "Product Sub Type Or Solution Sub Type":"Planning, Sales, Operations and  Forecasting",
+        "Industry\/Technology  Domain":"Supply Chain",
+        "Industry\/Technology  Domain(Summarized)":"Supply Chain",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Implementation and Administration"
+    },
+    {
+        "S.no":52,
+        "Name":" SAP Certified Associate - Data Engineer - Data Fabric BW4 hana datasphere",
+        "Associated Product Solution":"SAP BW4 Hana, SAP Datasphere",
+        "Code":"C_BW4H",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP BW4 hana and datasphere",
+        "Product\/ Task Type Or Solution Type":"Business and Data Warehousing ",
+        "Product Sub Type Or Solution Sub Type":"BW4\/HANA and Datasphere",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Data Warehousing",
+        "Industry Sub Role":"Data Acquisition, Modelling and Design "
+    },
+    {
+        "S.no":53,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Ariba Procurement",
+        "Associated Product Solution":"SAP Ariba Procurement",
+        "Code":"C_ARP2P",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Ariba",
+        "Product\/ Task Type Or Solution Type":"Sourcing and Procurememt Management ",
+        "Product Sub Type Or Solution Sub Type":"Procurement Management Module",
+        "Industry\/Technology  Domain":"Supply Chain",
+        "Industry\/Technology  Domain(Summarized)":"Supply Chain",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Administration"
+    },
+    {
+        "S.no":54,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Ariba Ariba Contracts",
+        "Associated Product Solution":"SAP Ariba Ariba Contracts",
+        "Code":"C_ARCON",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Ariba",
+        "Product\/ Task Type Or Solution Type":"Sourcing and Procurememt Management ",
+        "Product Sub Type Or Solution Sub Type":"Contracts Management Module",
+        "Industry\/Technology  Domain":"Supply Chain",
+        "Industry\/Technology  Domain(Summarized)":"Supply Chain",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Use and Configuration(BA)"
+    },
+    {
+        "S.no":55,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Ariba Supplier Management",
+        "Associated Product Solution":"SAP Ariba Supplier Management",
+        "Code":"C_ARSUM",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Ariba",
+        "Product\/ Task Type Or Solution Type":"Sourcing and Procurememt Management ",
+        "Product Sub Type Or Solution Sub Type":"Supplier Management Module",
+        "Industry\/Technology  Domain":"Supply Chain",
+        "Industry\/Technology  Domain(Summarized)":"Supply Chain",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Use and Configuration(BA)"
+    },
+    {
+        "S.no":56,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Success Full Cloud Core Hybrid",
+        "Associated Product Solution":"SAP Success Full Cloud Core Hybrid",
+        "Code":"C_HRHFC",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Core Module ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":57,
+        "Name":" SAP Certified Associate - SAP SuccessFactors for Employee Central Employee Central Payroll",
+        "Associated Product Solution":"SAP SuccessFactors for Employee Central Employee Central Payroll",
+        "Code":"C_HRHPC",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Payroll Management Module ",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":58,
+        "Name":" SAP Certified Associate - Implementation Consultant - SuccessPerformancePerformance and Goals",
+        "Associated Product Solution":" SAP SuccessFactors Performance and Goals Management",
+        "Code":"C_THR82",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Performance and Goals Management module",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":59,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Succession Management",
+        "Associated Product Solution":"SAP SuccessFactors Succession Management",
+        "Code":"C_THR85",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Succession Management Module",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":60,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Workforce Analytics and Planning",
+        "Associated Product Solution":"SAP SuccessFactors Workforce Analytics and Planning",
+        "Code":"C_THR89",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Workforce Analytics and Planning Module",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":61,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Career Development Planning and Mentoring",
+        "Associated Product Solution":"SAP SuccessFactors Career Development Planning and Mentoring",
+        "Code":"C_THR95",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Career Development Planning and Mentoring Module",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":62,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Workforce Analytics",
+        "Associated Product Solution":"SAP SuccessFactors Workforce Analytics",
+        "Code":"C_THR96",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Workforce Analytics Module",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":63,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Onboarding",
+        "Associated Product Solution":"SAP SuccessFactors Onboarding",
+        "Code":"C_THR97_2405",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Onboarding Management Module",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":64,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Ariba Sourcing",
+        "Associated Product Solution":"SAP Ariba Sourcing",
+        "Code":"C_ARSOR",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Ariba",
+        "Product\/ Task Type Or Solution Type":"Sourcing and Procurememt Management ",
+        "Product Sub Type Or Solution Sub Type":"Sourcing Management",
+        "Industry\/Technology  Domain":"Supply Chain",
+        "Industry\/Technology  Domain(Summarized)":"Supply Chain",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":65,
+        "Name":" SAP Certified Associate - SAP S_4HANA Asset Management",
+        "Associated Product Solution":"SAP S_4HANA Asset Management",
+        "Code":"C_S43",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Asset Management",
+        "Industry\/Technology  Domain":"Maintenance",
+        "Industry\/Technology  Domain(Summarized)":"Service",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":66,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Success_People Analytics Reporting",
+        "Associated Product Solution":"SAP Success_People Analytics Reporting",
+        "Code":"C_THR92_2405",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"People Analytics Reporting Module",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":67,
+        "Name":" SAP Certified Associate - Extended Warehouse Management in SAP S_",
+        "Associated Product Solution":"Extended Warehouse Management in SAP S_4HANA",
+        "Code":"C_S4EWM",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Warehouse Management",
+        "Industry\/Technology  Domain":"Supply chain",
+        "Industry\/Technology  Domain(Summarized)":"Supply chain",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":68,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP Success Employee Central Core",
+        "Associated Product Solution":"SAP Success Employee Central Core",
+        "Code":"C_THR81_2405",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Central Core Module",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":69,
+        "Name":" SAP Certified Associate - SAP Enable Now",
+        "Associated Product Solution":"SAP Enable Now",
+        "Code":"C_SEN_2305",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":" SAP Enable Now",
+        "Product\/ Task Type Or Solution Type":"Kowledge Sharing Platform ",
+        "Product Sub Type Or Solution Sub Type":"Knowledge Sharing Platform ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Configuration and Administation"
+    },
+    {
+        "S.no":70,
+        "Name":" SAP Certified Associate - Implementation Consultant - Managed gateway for spend management and SAP Business Network",
+        "Associated Product Solution":"Managed gateway for spend management and SAP Business Network",
+        "Code":"C_ARCIG_2404",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"Managed gateway for spend management and SAP Business Network",
+        "Product\/ Task Type Or Solution Type":"Integretion Suite",
+        "Product Sub Type Or Solution Sub Type":"Integretion Suite",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Developer (Code)",
+        "R3_Sub Role":"Developer - Cloud Intergration ",
+        "Industry Sub Role":"Cloud Integration Developer"
+    },
+    {
+        "S.no":71,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP S_4HANA - Financial Accounting",
+        "Associated Product Solution":"SAP S_4HANA - Financial Accounting",
+        "Code":"C_S4CFI_2402",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Financial Accounting",
+        "Industry\/Technology  Domain":"Accounting",
+        "Industry\/Technology  Domain(Summarized)":"Accounting",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Domain and Product Expert",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":72,
+        "Name":" SAP Certified Associate - SAP SuccessFactors Time Management",
+        "Associated Product Solution":"SAP SuccessFactors Time Management",
+        "Code":"C_THR94_2405",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP SuccessFactors",
+        "Product\/ Task Type Or Solution Type":"Human Capital Management ",
+        "Product Sub Type Or Solution Sub Type":"Time Management Module ",
+        "Industry\/Technology  Domain":"Human Resources ",
+        "Industry\/Technology  Domain(Summarized)":"Human Resources ",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design, Technology use(Business User) and Customization",
+        "Industry Sub Role":"Technology Use, Configuration and Customization - Business Solution"
+    },
+    {
+        "S.no":73,
+        "Name":" SAP Certified Associate - SAP Business One",
+        "Associated Product Solution":"SAP Business One",
+        "Code":"C_TB1200_10",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Business One",
+        "Product\/ Task Type Or Solution Type":"ERP - Small and Midsize",
+        "Product Sub Type Or Solution Sub Type":"Out of the Box ERP for small Business",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":74,
+        "Name":" SAP Certified Associate - Implementation Consultant - SAP S_4HANA - Sourcing and Procurement",
+        "Associated Product Solution":"SAP S_4HANA - Sourcing and Procurement",
+        "Code":"C_S4CPR_2408",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Sourcing and Procurement",
+        "Industry\/Technology  Domain":"Supply Chain",
+        "Industry\/Technology  Domain(Summarized)":"Supply Chain",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Solution Design and Configuration",
+        "Industry Sub Role":"Technology Implementation and Configuration - Business Process"
+    },
+    {
+        "S.no":75,
+        "Name":"SAP Certified Associate \u2013 Process Management Consultant - SAP Signavio",
+        "Associated Product Solution":"SAP Signavio",
+        "Code":"C_SIGPM_2403",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Signavio",
+        "Product\/ Task Type Or Solution Type":"Business Process Management and Intelligence ",
+        "Product Sub Type Or Solution Sub Type":"Business Process Management",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":"Functional - Business Process Management",
+        "Industry Sub Role":"Business Process Management "
+    },
+    {
+        "S.no":76,
+        "Name":"SAP Certified Associate - Implementation Consultant - SAP Sales Cloud Version 2",
+        "Associated Product Solution":"SAP Sales Cloud Version 2",
+        "Code":"C_C4H47I_34",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Sales Cloud ",
+        "Product\/ Task Type Or Solution Type":"Sales Managament ",
+        "Product Sub Type Or Solution Sub Type":"Sales Management ",
+        "Industry\/Technology  Domain":"Sales",
+        "Industry\/Technology  Domain(Summarized)":"Sales",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Implementation",
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":77,
+        "Name":"SAP Certified Associate - Integration Consultant - SAP Sales and Service Cloud",
+        "Associated Product Solution":"SAP Sales and Service Cloud",
+        "Code":"C_C4H45",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Sales and Service Cloud",
+        "Product\/ Task Type Or Solution Type":"Sales and Service Management ",
+        "Product Sub Type Or Solution Sub Type":"Sales and Service Management ",
+        "Industry\/Technology  Domain":"Sales and Service",
+        "Industry\/Technology  Domain(Summarized)":"Sales and Service",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Solution Integration",
+        "Industry Sub Role":"Cloud Integration Consultant"
+    },
+    {
+        "S.no":78,
+        "Name":"SAP Certified Associate - Developer - SAP Sales and Service Cloud",
+        "Associated Product Solution":"SAP Sales and Service Cloud",
+        "Code":"C_C4H460_21",
+        "Role_SAP":"Developer",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Sales and Service Cloud",
+        "Product\/ Task Type Or Solution Type":"Sales and Service Management ",
+        "Product Sub Type Or Solution Sub Type":"Sales and Service Management ",
+        "Industry\/Technology  Domain":"Sales and Service",
+        "Industry\/Technology  Domain(Summarized)":"Sales and Service",
+        "R3_ Role":"Developer (Code)",
+        "R3_Sub Role":"Developer - Cloud Intergration ",
+        "Industry Sub Role":"Cloud Integration Developer"
+    },
+    {
+        "S.no":79,
+        "Name":"SAP Certified Associate - Reporting, Modeling and Data Acquisition with SAP BW\/4HANA",
+        "Associated Product Solution":"Reporting, Modeling and Data Acquisition with SAP BW\/4HANA",
+        "Code":"C_BW4H_214",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP BW_4HANA",
+        "Product\/ Task Type Or Solution Type":"Business Warehouse ",
+        "Product Sub Type Or Solution Sub Type":"Data Acquisition, Modeling and Reporting",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":"Technical(Low Code) - Data Warehousing",
+        "Industry Sub Role":"Data Acquisition, Modelling and Reporting "
+    },
+    {
+        "S.no":80,
+        "Name":"SAP Certified Specialist - SAP S\/4HANA Conversion and SAP System Upgrade",
+        "Associated Product Solution":"SAP S\/4HANA Conversion and SAP System Upgrade",
+        "Code":"E_S4CON",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Experience ",
+        "Level _SAP":"Certified Specialist ",
+        "Product\/ Task Family Or Solution Group":"SAP S_4HANA",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"System Administration",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (No Code)",
+        "R3_Sub Role":"Technical(No Code) - Adminsitration - Application",
+        "Industry Sub Role":"Administration - Application "
+    },
+    {
+        "S.no":81,
+        "Name":"SAP Certified Associate - Solution Transformation Consultant with SAP Cloud ALM",
+        "Associated Product Solution":"SAP Cloud ALM(Application Lifecycle Management)",
+        "Code":"C_STC",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP ALM",
+        "Product\/ Task Type Or Solution Type":"Project Lifecycle Management",
+        "Product Sub Type Or Solution Sub Type":"Portfolio and Project Management",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Management ",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Product Manager"
+    },
+    {
+        "S.no":82,
+        "Name":"SAP Certified Associate - Low-Code\/No-Code Developer - SAP Build",
+        "Associated Product Solution":"SAP Low Code\/ No Code",
+        "Code":"C_LCNC",
+        "Role_SAP":"Developer",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP LCNC",
+        "Product\/ Task Type Or Solution Type":"Application Development",
+        "Product Sub Type Or Solution Sub Type":"Application Development",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Low code No Code Application Developer"
+    },
+    {
+        "S.no":83,
+        "Name":"SAP Certified Associate - SAP Fiori System Administration",
+        "Associated Product Solution":"SAP Fiori",
+        "Code":"C_FIOAD",
+        "Role_SAP":"Developer",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Fiori",
+        "Product\/ Task Type Or Solution Type":"Front End Development",
+        "Product Sub Type Or Solution Sub Type":"Front End Development",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Developer (Code)",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Front End Developer"
+    },
+    {
+        "S.no":84,
+        "Name":"SAP Certified Professional - Solution Architect - SAP BTP",
+        "Associated Product Solution":"SAP BTP",
+        "Code":"P_BTPA",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Professional ",
+        "Level _SAP":"Certified Professional ",
+        "Product\/ Task Family Or Solution Group":"SAP BTP",
+        "Product\/ Task Type Or Solution Type":"Enterprise Cloud Platform",
+        "Product Sub Type Or Solution Sub Type":"Architecture, Design and Development ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Architecture ",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Solution Architect"
+    },
+    {
+        "S.no":85,
+        "Name":"SAP Certified Associate - Implementation Consultant - End-to-End Business Processes for the Intelligent Enterprise",
+        "Associated Product Solution":"SAP ERP",
+        "Code":"C_IEE2E",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP ERP",
+        "Product\/ Task Type Or Solution Type":"ERP",
+        "Product Sub Type Or Solution Sub Type":"Architecture, Design and Development ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Architecture ",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Enterprise Architect"
+    },
+    {
+        "S.no":86,
+        "Name":"SAP Certified Associate - SAP Fiori Application Developer",
+        "Associated Product Solution":"SAP Fiori",
+        "Code":"C_FIORD",
+        "Role_SAP":"Developer",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Fiori",
+        "Product\/ Task Type Or Solution Type":"Application Development",
+        "Product Sub Type Or Solution Sub Type":"Application Development",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Developer (Code)",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Application Developer"
+    },
+    {
+        "S.no":87,
+        "Name":"SAP Certified Associate - Back-End Developer - ABAP Cloud",
+        "Associated Product Solution":"SAP ABAP",
+        "Code":"C_ABAPD",
+        "Role_SAP":"Developer",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP ABAP",
+        "Product\/ Task Type Or Solution Type":"ABAP ",
+        "Product Sub Type Or Solution Sub Type":"Back End Development",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Developer (Code)",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Back End Cloud Developer"
+    },
+    {
+        "S.no":88,
+        "Name":"SAP Certified Associate - Process Data Analyst - SAP Signavio",
+        "Associated Product Solution":"SAP Signavio",
+        "Code":"C_SIGDA",
+        "Role_SAP":"Data Analyst ",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Signavio",
+        "Product\/ Task Type Or Solution Type":"Business Process Management and Intelligence ",
+        "Product Sub Type Or Solution Sub Type":"Business Process Management",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Business Process Management "
+    },
+    {
+        "S.no":89,
+        "Name":"SAP Certified Associate - Project Manager - SAP Activate",
+        "Associated Product Solution":"SAP Activate",
+        "Code":"C_ACT",
+        "Role_SAP":"Project Manager",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Activate",
+        "Product\/ Task Type Or Solution Type":"Methodology, tool and Best Practices ",
+        "Product Sub Type Or Solution Sub Type":"Project and Program Management ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Management ",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Project Management"
+    },
+    {
+        "S.no":90,
+        "Name":"SAP Certified Associate - Business User - SAP Commerce Cloud",
+        "Associated Product Solution":"SAP Commerce Cloud",
+        "Code":"C_C4H32",
+        "Role_SAP":"Business User",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Commerce Cloud",
+        "Product\/ Task Type Or Solution Type":"E-Commerce Solution",
+        "Product Sub Type Or Solution Sub Type":"E-Commerce Solution",
+        "Industry\/Technology  Domain":"Retail and E-Commerce",
+        "Industry\/Technology  Domain(Summarized)":"Retail and E-Commerce",
+        "R3_ Role":"Functional ",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Business User"
+    },
+    {
+        "S.no":91,
+        "Name":"SAP Certified Associate Implementation Consultant - SAP Emarsys Customer Engagement",
+        "Associated Product Solution":"SAP Emarsys",
+        "Code":"C_C4H22",
+        "Role_SAP":"Consultant",
+        "Experience Level":"Entry Level ",
+        "Level _SAP":"Certified Associate",
+        "Product\/ Task Family Or Solution Group":"SAP Emarsys",
+        "Product\/ Task Type Or Solution Type":"Customer Engagement",
+        "Product Sub Type Or Solution Sub Type":"Customer Engagement",
+        "Industry\/Technology  Domain":"Customer Experience ",
+        "Industry\/Technology  Domain(Summarized)":"Customer Experience ",
+        "R3_ Role":"Technical (Low Code)",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Technology Implementation Consultant - Solution"
+    },
+    {
+        "S.no":92,
+        "Name":"SAP Certified Professional - SAP Enterprise Architect",
+        "Associated Product Solution":"SAP Enterprise Architecture",
+        "Code":"P_SAPEA",
+        "Role_SAP":"Architect",
+        "Experience Level":"Professional ",
+        "Level _SAP":"Certified Professional ",
+        "Product\/ Task Family Or Solution Group":"SAP Enterprise Architecture",
+        "Product\/ Task Type Or Solution Type":"Enterprise Architecture",
+        "Product Sub Type Or Solution Sub Type":"Architecture, Design and Development ",
+        "Industry\/Technology  Domain":"Technology",
+        "Industry\/Technology  Domain(Summarized)":"Technology",
+        "R3_ Role":"Architecture",
+        "R3_Sub Role":null,
+        "Industry Sub Role":"Enterprise Architect"
+    }
+]; [
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP S_4HANA, Cloud Public Edition, Sales",
+        "Code": "C_S4CS"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP S_4HANA",
+        "Code": "C_S4CPB"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA System Administration",
+        "Code": "C_TADM"
+    },
+    {
+        "Name": " SAP Certified Associate - Data Engineer - SAP HANA",
+        "Code": "C_HAMOD"
+    },
+    {
+        "Name": " SAP Certified Associate - Integration Developer",
+        "Code": "C_CPI"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP Fieldglass Services Procurement",
+        "Code": "C_TFG61"
+    },
+    {
+        "Name": " SAP Certified Professional - Developer - SAP Commerce Cloud",
+        "Code": "P_C4H34"
+    },
+    {
+        "Name": " SAP Certified Associate - Design Thinking",
+        "Code": "C_THINK"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP Fieldglass Contingent Workforce Management",
+        "Code": "C_TFG51"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA Project Systems",
+        "Code": "C_TS412"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP HCM for S_4HANA S4HANA",
+        "Code": "C_THR12"
+    },
+    {
+        "Name": " SAP Certified Specialist - SAP S_4HANA Cloud Private Edition, implementation with SAP Activate",
+        "Code": "E_S4CPE"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Sales Cloud",
+        "Code": "C_C4H41"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP Business ByDesign Implementation Consultant",
+        "Code": "C_BYD15"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP Billing and Revenue Innovation Management ",
+        "Code": "C_BRU2C"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP Billing and Revenue Innovation Management ",
+        "Code": "C_BRSOM"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Service Cloud",
+        "Code": "C_C4H51"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP HCM Payroll for SAP S4HANA",
+        "Code": "C_HCMP"
+    },
+    {
+        "Name": " SAP Certified Associate - Backend Developer - SAP Cloud Application model",
+        "Code": "C_CPE"
+    },
+    {
+        "Name": " SAP Certified Associate - Solution Architect - Customer Experience",
+        "Code": "C_C4HCX"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Service V2",
+        "Code": "C_C4H56"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP Master Data Governance",
+        "Code": "C_MDG"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP Field Service Management",
+        "Code": "C_FSM"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA Portfolio and Project Management",
+        "Code": "C_S4PPM"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Financial accounting",
+        "Code": "C_TS4FI"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA for Management Accounting for Associates",
+        "Code": "C_TS4CO"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Quality Management",
+        "Code": "C_TS414"
+    },
+    {
+        "Name": " SAP Certified Specialist - Project Manager - SAP Activate for Agile implementation management",
+        "Code": "E_ACTAI"
+    },
+    {
+        "Name": " SAP Certified Specialist - SAP BW_4HANA Delta",
+        "Code": "E_BW4HE"
+    },
+    {
+        "Name": " SAP Certified Associate - Data Analyst - SAP Analytics Cloud",
+        "Code": "C_SAC"
+    },
+    {
+        "Name": " SAP Certified Associate - Business Process Integration with SAP S4HANA",
+        "Code": "C_TS410"
+    },
+    {
+        "Name": " SAP Certified Associate - Database Administrator - SAP HANA",
+        "Code": "C_DBADM"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA Sourcing and Procurement",
+        "Code": "C_TS452"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Sales",
+        "Code": "C_TS462"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Customer Data Platform",
+        "Code": "C_C4H63"
+    },
+    {
+        "Name": " SAP Certified Professional - Financials in SAP S_4HANA for SAP Finance Experts",
+        "Code": "P_S4FIN"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP SuccessFactors Incentive Management",
+        "Code": "C_THR70"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Central Finance",
+        "Code": "C_S4FCF"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP Build Work Zone - Implementation and admin",
+        "Code": "C_WZADM"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP SuccessFactors Recruiting Recruiter Experience",
+        "Code": "C_THR83"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Treasury",
+        "Code": "C_S4FTR"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP SuccessFactors Variable Pay",
+        "Code": "C_THR87"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP SuccessFactors Recruiting_ Candidate",
+        "Code": "C_THR84"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP SuccessFactors Learning",
+        "Code": "C_THR88"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP SuccessFactors Compensation",
+        "Code": "C_THR86"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Production Planning and Manufacturing",
+        "Code": "C_TS422"
+    },
+    {
+        "Name": " SAP Certified Associate - Enterprise Architecture Consultant - SAP LeanIX",
+        "Code": "C_LIXEA"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Business Network for Supply Chain",
+        "Code": "C_ARSCC"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Customer Data Cloud",
+        "Code": "C_C4H62"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Transport",
+        "Code": "C_S4TM"
+    },
+    {
+        "Name": " SAP Certified Application Associate - SAP IBP for Supply Chain _ SAP Learning",
+        "Code": "C_IBP"
+    },
+    {
+        "Name": " SAP Certified Associate - Data Engineer - Data Fabric BW4 hana datasphere",
+        "Code": "C_BW4H"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Ariba Procurement",
+        "Code": "C_ARP2P"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Ariba Ariba Contracts",
+        "Code": "C_ARCON"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Ariba Supplier Management",
+        "Code": "C_ARSUM"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Success Full Cloud Core Hybrid",
+        "Code": "C_HRHFC"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP SuccessFactors for Employee Central Employee Central Payroll",
+        "Code": "C_HRHPC"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SuccessPerformancePerformance and Goals",
+        "Code": "C_THR82"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Succession Management",
+        "Code": "C_THR85"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Workforce Analytics and Planning",
+        "Code": "C_THR89"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Career Development Planning and Mentoring",
+        "Code": "C_THR95"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Workforce Analytics",
+        "Code": "C_THR96"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Onboarding",
+        "Code": "C_THR97_2405"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Ariba Sourcing",
+        "Code": "C_ARSOR"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP S_4HANA Asset Management",
+        "Code": "C_S43"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Success_People Analytics Reporting",
+        "Code": "C_THR92_2405"
+    },
+    {
+        "Name": " SAP Certified Associate - Extended Warehouse Management in SAP S_",
+        "Code": "C_S4EWM"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP Success Employee Central Core",
+        "Code": "C_THR81_2405"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP Enable Now",
+        "Code": "C_SEN_2305"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - Managed gateway for spend management and SAP Business Network",
+        "Code": "C_ARCIG_2404"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP S_4HANA - Financial Accounting",
+        "Code": "C_S4CFI_2402"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP SuccessFactors Time Management",
+        "Code": "C_THR94_2405"
+    },
+    {
+        "Name": " SAP Certified Associate - SAP Business One",
+        "Code": "C_TB1200_10"
+    },
+    {
+        "Name": " SAP Certified Associate - Implementation Consultant - SAP S_4HANA - Sourcing and Procurement",
+        "Code": "C_S4CPR_2408"
+    },
+    {
+        "Name": "SAP Certified Associate \u2013 Process Management Consultant - SAP Signavio",
+        "Code": "C_SIGPM_2403"
+    },
+    {
+        "Name": "SAP Certified Associate - Implementation Consultant - SAP Sales Cloud Version 2",
+        "Code": "C_C4H47I_34"
+    },
+    {
+        "Name": "SAP Certified Associate - Integration Consultant - SAP Sales and Service Cloud",
+        "Code": "C_C4H45"
+    },
+    {
+        "Name": "SAP Certified Associate - Developer - SAP Sales and Service Cloud",
+        "Code": "C_C4H460_21"
+    },
+    {
+        "Name": "SAP Certified Associate - Reporting, Modeling and Data Acquisition with SAP BW/4HANA",
+        "Code": "C_BW4H_214"
+    },
+    {
+        "Name": "SAP Certified Specialist - SAP S/4HANA Conversion and SAP System Upgrade",
+        "Code": "E_S4CON"
+    },
+    {
+        "Name": "SAP Certified Associate - Solution Transformation Consultant with SAP Cloud ALM",
+        "Code": "C_STC"
+    },
+    {
+        "Name": "SAP Certified Associate - Low-Code/No-Code Developer - SAP Build",
+        "Code": "C_LCNC"
+    },
+    {
+        "Name": "SAP Certified Associate - SAP Fiori System Administration",
+        "Code": "C_FIOAD"
+    },
+    {
+        "Name": "SAP Certified Professional - Solution Architect - SAP BTP",
+        "Code": "P_BTPA"
+    },
+    {
+        "Name": "SAP Certified Associate - Implementation Consultant - End-to-End Business Processes for the Intelligent Enterprise",
+        "Code": "C_IEE2E"
+    },
+    {
+        "Name": "SAP Certified Associate - SAP Fiori Application Developer",
+        "Code": "C_FIORD"
+    },
+    {
+        "Name": "SAP Certified Associate - Back-End Developer - ABAP Cloud",
+        "Code": "C_ABAPD"
+    },
+    {
+        "Name": "SAP Certified Associate - Process Data Analyst - SAP Signavio",
+        "Code": "C_SIGDA"
+    },
+    {
+        "Name": "SAP Certified Associate - Project Manager - SAP Activate",
+        "Code": "C_ACT"
+    },
+    {
+        "Name": "SAP Certified Associate - Business User - SAP Commerce Cloud",
+        "Code": "C_C4H32"
+    },
+    {
+        "Name": "SAP Certified Associate Implementation Consultant - SAP Emarsys Customer Engagement",
+        "Code": "C_C4H22"
+    },
+    {
+        "Name": "SAP Certified Professional - SAP Enterprise Architect",
+        "Code": "P_SAPEA"
+    }
+]; "[\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP S_4HANA, Cloud Public Edition, Sales\",\n        \"Industry\\/Technology  Domain\":\"Sales\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP S_4HANA\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA System Administration\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Administrator\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Data Engineer - SAP HANA\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Data Scientist\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Integration Developer\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Fieldglass Services Procurement\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Professional - Developer - SAP Commerce Cloud\",\n        \"Industry\\/Technology  Domain\":\"Retail and E-Commerce\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Professional \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Design Thinking\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Fieldglass Contingent Workforce Management\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Project Systems\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP HCM for S_4HANA S4HANA\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Specialist - SAP S_4HANA Cloud Private Edition, implementation with SAP Activate\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Experience \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Sales Cloud\",\n        \"Industry\\/Technology  Domain\":\"Sales\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Business ByDesign Implementation Consultant\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Billing and Revenue Innovation Management \",\n        \"Industry\\/Technology  Domain\":\"Finance \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Billing and Revenue Innovation Management \",\n        \"Industry\\/Technology  Domain\":\"Finance\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Service Cloud\",\n        \"Industry\\/Technology  Domain\":\"Service \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP HCM Payroll for SAP S4HANA\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Backend Developer - SAP Cloud Application model\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Solution Architect - Customer Experience\",\n        \"Industry\\/Technology  Domain\":\"Customer Experience\",\n        \"Role_SAP\":\"Architect\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Service V2\",\n        \"Industry\\/Technology  Domain\":\"Service\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Master Data Governance\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Field Service Management\",\n        \"Industry\\/Technology  Domain\":\"Field Service \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Portfolio and Project Management\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Financial accounting\",\n        \"Industry\\/Technology  Domain\":\"Accounting\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA for Management Accounting for Associates\",\n        \"Industry\\/Technology  Domain\":\"Accounting\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Quality Management\",\n        \"Industry\\/Technology  Domain\":\"Quality \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Specialist - Project Manager - SAP Activate for Agile implementation management\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Project Manager\",\n        \"Experience Level\":\"Professional \"\n    },\n    {\n        \"Name\":\" SAP Certified Specialist - SAP BW_4HANA Delta\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Professional \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Data Analyst - SAP Analytics Cloud\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Data Analyst\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Business Process Integration with SAP S4HANA\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Database Administrator - SAP HANA\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Administrator\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Sourcing and Procurement\",\n        \"Industry\\/Technology  Domain\":\"Sourcing and Procurement\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Sales\",\n        \"Industry\\/Technology  Domain\":\"Sales\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Customer Data Platform\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Professional - Financials in SAP S_4HANA for SAP Finance Experts\",\n        \"Industry\\/Technology  Domain\":\"Finance\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Professional \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Incentive Management\",\n        \"Industry\\/Technology  Domain\":\"Incentive Management\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Central Finance\",\n        \"Industry\\/Technology  Domain\":\"Finance\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Build Work Zone - Implementation and admin\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Recruiting Recruiter Experience\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Treasury\",\n        \"Industry\\/Technology  Domain\":\"Finance\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Variable Pay\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Recruiting_ Candidate\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Learning\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Compensation\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Production Planning and Manufacturing\",\n        \"Industry\\/Technology  Domain\":\"Manufacturing\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Enterprise Architecture Consultant - SAP LeanIX\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Business Network for Supply Chain\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Customer Data Cloud\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Transport\",\n        \"Industry\\/Technology  Domain\":\"Transport\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Application Associate - SAP IBP for Supply Chain _ SAP Learning\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Data Engineer - Data Fabric BW4 hana datasphere\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Ariba Procurement\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Ariba Ariba Contracts\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Ariba Supplier Management\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Success Full Cloud Core Hybrid\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors for Employee Central Employee Central Payroll\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SuccessPerformancePerformance and Goals\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Succession Management\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Workforce Analytics and Planning\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Career Development Planning and Mentoring\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Workforce Analytics\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Onboarding\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Ariba Sourcing\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Asset Management\",\n        \"Industry\\/Technology  Domain\":\"Maintenance\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Success_People Analytics Reporting\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Extended Warehouse Management in SAP S_\",\n        \"Industry\\/Technology  Domain\":\"Supply chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Success Employee Central Core\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Enable Now\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - Managed gateway for spend management and SAP Business Network\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP S_4HANA - Financial Accounting\",\n        \"Industry\\/Technology  Domain\":\"Accounting\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Time Management\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Business One\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP S_4HANA - Sourcing and Procurement\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate \\u2013 Process Management Consultant - SAP Signavio\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Implementation Consultant - SAP Sales Cloud Version 2\",\n        \"Industry\\/Technology  Domain\":\"Sales\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Integration Consultant - SAP Sales and Service Cloud\",\n        \"Industry\\/Technology  Domain\":\"Sales and Service\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Developer - SAP Sales and Service Cloud\",\n        \"Industry\\/Technology  Domain\":\"Sales and Service\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Reporting, Modeling and Data Acquisition with SAP BW\\/4HANA\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Specialist - SAP S\\/4HANA Conversion and SAP System Upgrade\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Experience \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Solution Transformation Consultant with SAP Cloud ALM\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Low-Code\\/No-Code Developer - SAP Build\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - SAP Fiori System Administration\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Professional - Solution Architect - SAP BTP\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Professional \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Implementation Consultant - End-to-End Business Processes for the Intelligent Enterprise\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - SAP Fiori Application Developer\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Back-End Developer - ABAP Cloud\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Process Data Analyst - SAP Signavio\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Data Analyst \",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Project Manager - SAP Activate\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Project Manager\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Business User - SAP Commerce Cloud\",\n        \"Industry\\/Technology  Domain\":\"Retail and E-Commerce\",\n        \"Role_SAP\":\"Business User\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate Implementation Consultant - SAP Emarsys Customer Engagement\",\n        \"Industry\\/Technology  Domain\":\"Customer Experience \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Professional - SAP Enterprise Architect\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Architect\",\n        \"Experience Level\":\"Professional \"\n    }\n]";
+
+        // Parse the JSON string
+        const certData = JSON.parse(certifications);
+
+        // Populate Table
+        function loadTable() {
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = ""; // Clear existing rows
+
+            certData.forEach(cert => {
+                let row = `<tr>
+                    <td><a href="https://learning.sap.com/certifications?page=2" target="_blank">${cert.Name}</a></td>
+                    <td>${cert["Industry/Technology  Domain"]}</td>
+                    <td>${cert.Role_SAP}</td>
+                    <td>${cert["Experience Level"]}</td>
+                    <td>${cert.Code || "N/A"}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            populateFilters();
+        }
+
+        // Populate Dropdown Filters Dynamically
+        function populateFilters() {
+            let industries = new Set(["All"]);
+            let roles = new Set(["All"]);
+            let experienceLevels = new Set(["All"]);
+
+            certData.forEach(cert => {
+                industries.add(cert["Industry/Technology  Domain"]);
+                roles.add(cert.Role_SAP);
+                experienceLevels.add(cert["Experience Level"]);
+            });
+
+            updateDropdown("industry", industries);
+            updateDropdown("role", roles);
+            updateDropdown("experience", experienceLevels);
+        }
+
+        function updateDropdown(id, options) {
+            let dropdown = document.getElementById(id);
+            dropdown.innerHTML = ""; // Clear existing options
+            options.forEach(option => {
+                let newOption = document.createElement("option");
+                newOption.value = option;
+                newOption.textContent = option;
+                dropdown.appendChild(newOption);
+            });
+        }
+
+        // Filter Table Based on Selections
+        function filterTable() {
+            let selectedIndustry = document.getElementById("industry").value;
+            let selectedRole = document.getElementById("role").value;
+            let selectedExperience = document.getElementById("experience").value;
+
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = ""; // Clear existing rows
+
+            certData.forEach(cert => {
+                if ((selectedIndustry === "All" || cert["Industry/Technology  Domain"] === selectedIndustry) &&
+                    (selectedRole === "All" || cert.Role_SAP === selectedRole) &&
+                    (selectedExperience === "All" || cert["Experience Level"] === selectedExperience)) {
+                    
+                    let row = `<tr>
+                        <td><a href="https://learning.sap.com/certifications?page=2" target="_blank">${cert.Name}</a></td>
+                        <td>${cert["Industry/Technology  Domain"]}</td>
+                        <td>${cert.Role_SAP}</td>
+                        <td>${cert["Experience Level"]}</td>
+                    <td>${cert.Code || "N/A"}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                }
+            });
+        }
+
+        // Load the Table on Page Load
+        window.onload = loadTable;
+    </script>
+
+</body>
+</html>
