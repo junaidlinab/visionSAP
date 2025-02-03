@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAP Certification Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            margin: auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🎓 SAP Certification Finder</h2>
+        <p>Select criteria to filter the certifications.</p>
+
+        <label for="industry">Industry:</label>
+        <select id="industry" onchange="filterTable()">
+            <option value="All">All</option>
+        </select>
+
+        <label for="role">Role:</label>
+        <select id="role" onchange="filterTable()">
+            <option value="All">All</option>
+        </select>
+
+        <label for="experience">Experience Level:</label>
+        <select id="experience" onchange="filterTable()">
+            <option value="All">All</option>
+        </select>
+
+        <table id="certTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Industry</th>
+                    <th>Role</th>
+                    <th>Experience Level</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Certification data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // SAP Certification Data (Embedded from JSON)
+        const certifications = "[\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP S_4HANA, Cloud Public Edition, Sales\",\n        \"Industry\\/Technology  Domain\":\"Sales\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP S_4HANA\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA System Administration\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Administrator\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Data Engineer - SAP HANA\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Data Scientist\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Integration Developer\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Fieldglass Services Procurement\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Professional - Developer - SAP Commerce Cloud\",\n        \"Industry\\/Technology  Domain\":\"Retail and E-Commerce\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Professional \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Design Thinking\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Fieldglass Contingent Workforce Management\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Project Systems\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP HCM for S_4HANA S4HANA\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Specialist - SAP S_4HANA Cloud Private Edition, implementation with SAP Activate\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Experience \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Sales Cloud\",\n        \"Industry\\/Technology  Domain\":\"Sales\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Business ByDesign Implementation Consultant\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Billing and Revenue Innovation Management \",\n        \"Industry\\/Technology  Domain\":\"Finance \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Billing and Revenue Innovation Management \",\n        \"Industry\\/Technology  Domain\":\"Finance\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Service Cloud\",\n        \"Industry\\/Technology  Domain\":\"Service \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP HCM Payroll for SAP S4HANA\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Backend Developer - SAP Cloud Application model\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Solution Architect - Customer Experience\",\n        \"Industry\\/Technology  Domain\":\"Customer Experience\",\n        \"Role_SAP\":\"Architect\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Service V2\",\n        \"Industry\\/Technology  Domain\":\"Service\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Master Data Governance\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Field Service Management\",\n        \"Industry\\/Technology  Domain\":\"Field Service \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Portfolio and Project Management\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Financial accounting\",\n        \"Industry\\/Technology  Domain\":\"Accounting\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA for Management Accounting for Associates\",\n        \"Industry\\/Technology  Domain\":\"Accounting\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Quality Management\",\n        \"Industry\\/Technology  Domain\":\"Quality \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Specialist - Project Manager - SAP Activate for Agile implementation management\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Project Manager\",\n        \"Experience Level\":\"Professional \"\n    },\n    {\n        \"Name\":\" SAP Certified Specialist - SAP BW_4HANA Delta\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Professional \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Data Analyst - SAP Analytics Cloud\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Data Analyst\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Business Process Integration with SAP S4HANA\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Database Administrator - SAP HANA\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Administrator\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Sourcing and Procurement\",\n        \"Industry\\/Technology  Domain\":\"Sourcing and Procurement\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Sales\",\n        \"Industry\\/Technology  Domain\":\"Sales\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Customer Data Platform\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Professional - Financials in SAP S_4HANA for SAP Finance Experts\",\n        \"Industry\\/Technology  Domain\":\"Finance\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Professional \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Incentive Management\",\n        \"Industry\\/Technology  Domain\":\"Incentive Management\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Central Finance\",\n        \"Industry\\/Technology  Domain\":\"Finance\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Build Work Zone - Implementation and admin\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Recruiting Recruiter Experience\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Treasury\",\n        \"Industry\\/Technology  Domain\":\"Finance\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Variable Pay\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Recruiting_ Candidate\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Learning\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Compensation\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Production Planning and Manufacturing\",\n        \"Industry\\/Technology  Domain\":\"Manufacturing\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Enterprise Architecture Consultant - SAP LeanIX\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Business Network for Supply Chain\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Customer Data Cloud\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Transport\",\n        \"Industry\\/Technology  Domain\":\"Transport\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Application Associate - SAP IBP for Supply Chain _ SAP Learning\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Data Engineer - Data Fabric BW4 hana datasphere\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Ariba Procurement\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Ariba Ariba Contracts\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Ariba Supplier Management\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Success Full Cloud Core Hybrid\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors for Employee Central Employee Central Payroll\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SuccessPerformancePerformance and Goals\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Succession Management\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Workforce Analytics and Planning\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Career Development Planning and Mentoring\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Workforce Analytics\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Onboarding\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Ariba Sourcing\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP S_4HANA Asset Management\",\n        \"Industry\\/Technology  Domain\":\"Maintenance\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Success_People Analytics Reporting\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Extended Warehouse Management in SAP S_\",\n        \"Industry\\/Technology  Domain\":\"Supply chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP Success Employee Central Core\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Enable Now\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - Managed gateway for spend management and SAP Business Network\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP S_4HANA - Financial Accounting\",\n        \"Industry\\/Technology  Domain\":\"Accounting\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP SuccessFactors Time Management\",\n        \"Industry\\/Technology  Domain\":\"Human Resources \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - SAP Business One\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\" SAP Certified Associate - Implementation Consultant - SAP S_4HANA - Sourcing and Procurement\",\n        \"Industry\\/Technology  Domain\":\"Supply Chain\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate \\u2013 Process Management Consultant - SAP Signavio\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Implementation Consultant - SAP Sales Cloud Version 2\",\n        \"Industry\\/Technology  Domain\":\"Sales\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Integration Consultant - SAP Sales and Service Cloud\",\n        \"Industry\\/Technology  Domain\":\"Sales and Service\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Developer - SAP Sales and Service Cloud\",\n        \"Industry\\/Technology  Domain\":\"Sales and Service\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Reporting, Modeling and Data Acquisition with SAP BW\\/4HANA\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Specialist - SAP S\\/4HANA Conversion and SAP System Upgrade\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Experience \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Solution Transformation Consultant with SAP Cloud ALM\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Low-Code\\/No-Code Developer - SAP Build\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - SAP Fiori System Administration\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Professional - Solution Architect - SAP BTP\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Professional \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Implementation Consultant - End-to-End Business Processes for the Intelligent Enterprise\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - SAP Fiori Application Developer\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Back-End Developer - ABAP Cloud\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Developer\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Process Data Analyst - SAP Signavio\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Data Analyst \",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Project Manager - SAP Activate\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Project Manager\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate - Business User - SAP Commerce Cloud\",\n        \"Industry\\/Technology  Domain\":\"Retail and E-Commerce\",\n        \"Role_SAP\":\"Business User\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Associate Implementation Consultant - SAP Emarsys Customer Engagement\",\n        \"Industry\\/Technology  Domain\":\"Customer Experience \",\n        \"Role_SAP\":\"Consultant\",\n        \"Experience Level\":\"Entry Level \"\n    },\n    {\n        \"Name\":\"SAP Certified Professional - SAP Enterprise Architect\",\n        \"Industry\\/Technology  Domain\":\"Technology\",\n        \"Role_SAP\":\"Architect\",\n        \"Experience Level\":\"Professional \"\n    }\n]";
+
+        // Parse the JSON string
+        const certData = JSON.parse(certifications);
+
+        // Populate Table
+        function loadTable() {
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = ""; // Clear existing rows
+
+            certData.forEach(cert => {
+                let row = `<tr>
+                    <td><a href="https://learning.sap.com/certifications?page=2" target="_blank">${cert.Name}</a></td>
+                    <td>${cert["Industry/Technology  Domain"]}</td>
+                    <td>${cert.Role_SAP}</td>
+                    <td>${cert["Experience Level"]}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            populateFilters();
+        }
+
+        // Populate Dropdown Filters Dynamically
+        function populateFilters() {
+            let industries = new Set(["All"]);
+            let roles = new Set(["All"]);
+            let experienceLevels = new Set(["All"]);
+
+            certData.forEach(cert => {
+                industries.add(cert["Industry/Technology  Domain"]);
+                roles.add(cert.Role_SAP);
+                experienceLevels.add(cert["Experience Level"]);
+            });
+
+            updateDropdown("industry", industries);
+            updateDropdown("role", roles);
+            updateDropdown("experience", experienceLevels);
+        }
+
+        function updateDropdown(id, options) {
+            let dropdown = document.getElementById(id);
+            dropdown.innerHTML = ""; // Clear existing options
+            options.forEach(option => {
+                let newOption = document.createElement("option");
+                newOption.value = option;
+                newOption.textContent = option;
+                dropdown.appendChild(newOption);
+            });
+        }
+
+        // Filter Table Based on Selections
+        function filterTable() {
+            let selectedIndustry = document.getElementById("industry").value;
+            let selectedRole = document.getElementById("role").value;
+            let selectedExperience = document.getElementById("experience").value;
+
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = ""; // Clear existing rows
+
+            certData.forEach(cert => {
+                if ((selectedIndustry === "All" || cert["Industry/Technology  Domain"] === selectedIndustry) &&
+                    (selectedRole === "All" || cert.Role_SAP === selectedRole) &&
+                    (selectedExperience === "All" || cert["Experience Level"] === selectedExperience)) {
+                    
+                    let row = `<tr>
+                        <td><a href="https://learning.sap.com/certifications?page=2" target="_blank">${cert.Name}</a></td>
+                        <td>${cert["Industry/Technology  Domain"]}</td>
+                        <td>${cert.Role_SAP}</td>
+                        <td>${cert["Experience Level"]}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                }
+            });
+        }
+
+        // Load the Table on Page Load
+        window.onload = loadTable;
+    </script>
+
+</body>
+</html>
