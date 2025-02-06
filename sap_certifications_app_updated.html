@@ -1,0 +1,815 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAP Certification Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            margin: auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #ddd;
+        }
+        .disclaimer {
+            font-size: 12px;
+            color: #555;
+            margin-top: 10px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🎓 SAP Certification Finder</h2>
+        <p>Select criteria to filter the certifications.</p>
+
+        <label for="industry">Industry:</label>
+        <select id="industry" onchange="filterTable()">
+            <option value="All">All</option>
+        </select>
+
+        <label for="role">Role:</label>
+        <select id="role" onchange="filterTable()">
+            <option value="All">All</option>
+        </select>
+
+        <label for="experience">Experience Level:</label>
+        <select id="experience" onchange="filterTable()">
+            <option value="All">All</option>
+        </select>
+
+        <p class="disclaimer">Disclaimer: This tool is independent of SAP and for informational purposes only. Verify details on SAP's official website.</p>
+
+        <table id="certTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Industry</th>
+                    <th>Role</th>
+                    <th>Experience Level</th>
+                    <th>Code</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Certification data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <p class="footer">Disclaimer: SAP and SAP logos are trademarks of SAP SE. This tool is for informational purposes only and is not affiliated with SAP.</p>
+
+    <script>
+        const certifications = [
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP S_4HANA, Cloud Public Edition, Sales</a>",
+        "Industry/Technology  Domain": "Sales",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_S4CS"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP S_4HANA</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_S4CPB"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA System Administration</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Administrator",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TADM"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Data Engineer - SAP HANA</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Data Scientist",
+        "Experience Level": "Entry Level ",
+        "Code": "C_HAMOD"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Integration Developer</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Developer",
+        "Experience Level": "Entry Level ",
+        "Code": "C_CPI"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP Fieldglass Services Procurement</a>",
+        "Industry/Technology  Domain": "Supply Chain ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TFG61"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Professional - Developer - SAP Commerce Cloud</a>",
+        "Industry/Technology  Domain": "Retail and E-Commerce",
+        "Role_SAP": "Developer",
+        "Experience Level": "Professional ",
+        "Code": "P_C4H34"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Design Thinking</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THINK"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP Fieldglass Contingent Workforce Management</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TFG51"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA Project Systems</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TS412"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP HCM for S_4HANA S4HANA</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR12"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Specialist - SAP S_4HANA Cloud Private Edition, implementation with SAP Activate</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Experience ",
+        "Code": "E_S4CPE"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Sales Cloud</a>",
+        "Industry/Technology  Domain": "Sales",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_C4H41"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP Business ByDesign Implementation Consultant</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_BYD15"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP Billing and Revenue Innovation Management </a>",
+        "Industry/Technology  Domain": "Finance ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_BRU2C"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP Billing and Revenue Innovation Management </a>",
+        "Industry/Technology  Domain": "Finance",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_BRSOM"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Service Cloud</a>",
+        "Industry/Technology  Domain": "Service ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_C4H51"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP HCM Payroll for SAP S4HANA</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_HCMP"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Backend Developer - SAP Cloud Application model</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Developer",
+        "Experience Level": "Entry Level ",
+        "Code": "C_CPE"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Solution Architect - Customer Experience</a>",
+        "Industry/Technology  Domain": "Customer Experience",
+        "Role_SAP": "Architect",
+        "Experience Level": "Entry Level ",
+        "Code": "C_C4HCX"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Service V2</a>",
+        "Industry/Technology  Domain": "Service",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_C4H56"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP Master Data Governance</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_MDG"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP Field Service Management</a>",
+        "Industry/Technology  Domain": "Field Service ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_FSM"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA Portfolio and Project Management</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_S4PPM"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Financial accounting</a>",
+        "Industry/Technology  Domain": "Accounting",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TS4FI"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA for Management Accounting for Associates</a>",
+        "Industry/Technology  Domain": "Accounting",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TS4CO"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Quality Management</a>",
+        "Industry/Technology  Domain": "Quality ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TS414"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Specialist - Project Manager - SAP Activate for Agile implementation management</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Project Manager",
+        "Experience Level": "Professional ",
+        "Code": "E_ACTAI"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Specialist - SAP BW_4HANA Delta</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Professional ",
+        "Code": "E_BW4HE"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Data Analyst - SAP Analytics Cloud</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Data Analyst",
+        "Experience Level": "Entry Level ",
+        "Code": "C_SAC"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Business Process Integration with SAP S4HANA</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TS410"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Database Administrator - SAP HANA</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Administrator",
+        "Experience Level": "Entry Level ",
+        "Code": "C_DBADM"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA Sourcing and Procurement</a>",
+        "Industry/Technology  Domain": "Sourcing and Procurement",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TS452"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Sales</a>",
+        "Industry/Technology  Domain": "Sales",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TS462"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Customer Data Platform</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_C4H63"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Professional - Financials in SAP S_4HANA for SAP Finance Experts</a>",
+        "Industry/Technology  Domain": "Finance",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Professional ",
+        "Code": "P_S4FIN"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP SuccessFactors Incentive Management</a>",
+        "Industry/Technology  Domain": "Incentive Management",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR70"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Central Finance</a>",
+        "Industry/Technology  Domain": "Finance",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_S4FCF"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP Build Work Zone - Implementation and admin</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_WZADM"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP SuccessFactors Recruiting Recruiter Experience</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR83"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Treasury</a>",
+        "Industry/Technology  Domain": "Finance",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_S4FTR"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP SuccessFactors Variable Pay</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR87"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP SuccessFactors Recruiting_ Candidate</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR84"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP SuccessFactors Learning</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR88"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP SuccessFactors Compensation</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR86"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Production Planning and Manufacturing</a>",
+        "Industry/Technology  Domain": "Manufacturing",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TS422"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Enterprise Architecture Consultant - SAP LeanIX</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_LIXEA"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Business Network for Supply Chain</a>",
+        "Industry/Technology  Domain": "Supply Chain",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_ARSCC"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Customer Data Cloud</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_C4H62"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA Cloud Private Edition, Transport</a>",
+        "Industry/Technology  Domain": "Transport",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_S4TM"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Application Associate - SAP IBP for Supply Chain _ SAP Learning</a>",
+        "Industry/Technology  Domain": "Supply Chain",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_IBP"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Data Engineer - Data Fabric BW4 hana datasphere</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_BW4H"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Ariba Procurement</a>",
+        "Industry/Technology  Domain": "Supply Chain",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_ARP2P"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Ariba Ariba Contracts</a>",
+        "Industry/Technology  Domain": "Supply Chain",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_ARCON"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Ariba Supplier Management</a>",
+        "Industry/Technology  Domain": "Supply Chain",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_ARSUM"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Success Full Cloud Core Hybrid</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_HRHFC"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP SuccessFactors for Employee Central Employee Central Payroll</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_HRHPC"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SuccessPerformancePerformance and Goals</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR82"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Succession Management</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR85"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Workforce Analytics and Planning</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR89"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Career Development Planning and Mentoring</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR95"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Workforce Analytics</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR96"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP SuccessFactors Onboarding</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR97_2405"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Ariba Sourcing</a>",
+        "Industry/Technology  Domain": "Supply Chain",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_ARSOR"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP S_4HANA Asset Management</a>",
+        "Industry/Technology  Domain": "Maintenance",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_S43"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Success_People Analytics Reporting</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR92_2405"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Extended Warehouse Management in SAP S_</a>",
+        "Industry/Technology  Domain": "Supply chain",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_S4EWM"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP Success Employee Central Core</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR81_2405"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP Enable Now</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_SEN_2305"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - Managed gateway for spend management and SAP Business Network</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_ARCIG_2404"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP S_4HANA - Financial Accounting</a>",
+        "Industry/Technology  Domain": "Accounting",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_S4CFI_2402"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP SuccessFactors Time Management</a>",
+        "Industry/Technology  Domain": "Human Resources ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_THR94_2405"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - SAP Business One</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_TB1200_10"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\"> SAP Certified Associate - Implementation Consultant - SAP S_4HANA - Sourcing and Procurement</a>",
+        "Industry/Technology  Domain": "Supply Chain",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_S4CPR_2408"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate \u2013 Process Management Consultant - SAP Signavio</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_SIGPM_2403"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - Implementation Consultant - SAP Sales Cloud Version 2</a>",
+        "Industry/Technology  Domain": "Sales",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_C4H47I_34"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - Integration Consultant - SAP Sales and Service Cloud</a>",
+        "Industry/Technology  Domain": "Sales and Service",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_C4H45"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - Developer - SAP Sales and Service Cloud</a>",
+        "Industry/Technology  Domain": "Sales and Service",
+        "Role_SAP": "Developer",
+        "Experience Level": "Entry Level ",
+        "Code": "C_C4H460_21"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - Reporting, Modeling and Data Acquisition with SAP BW/4HANA</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_BW4H_214"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Specialist - SAP S/4HANA Conversion and SAP System Upgrade</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Experience ",
+        "Code": "E_S4CON"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - Solution Transformation Consultant with SAP Cloud ALM</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_STC"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - Low-Code/No-Code Developer - SAP Build</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Developer",
+        "Experience Level": "Entry Level ",
+        "Code": "C_LCNC"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - SAP Fiori System Administration</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Developer",
+        "Experience Level": "Entry Level ",
+        "Code": "C_FIOAD"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Professional - Solution Architect - SAP BTP</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Professional ",
+        "Code": "P_BTPA"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - Implementation Consultant - End-to-End Business Processes for the Intelligent Enterprise</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_IEE2E"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - SAP Fiori Application Developer</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Developer",
+        "Experience Level": "Entry Level ",
+        "Code": "C_FIORD"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - Back-End Developer - ABAP Cloud</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Developer",
+        "Experience Level": "Entry Level ",
+        "Code": "C_ABAPD"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - Process Data Analyst - SAP Signavio</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Data Analyst ",
+        "Experience Level": "Entry Level ",
+        "Code": "C_SIGDA"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - Project Manager - SAP Activate</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Project Manager",
+        "Experience Level": "Entry Level ",
+        "Code": "C_ACT"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate - Business User - SAP Commerce Cloud</a>",
+        "Industry/Technology  Domain": "Retail and E-Commerce",
+        "Role_SAP": "Business User",
+        "Experience Level": "Entry Level ",
+        "Code": "C_C4H32"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Associate Implementation Consultant - SAP Emarsys Customer Engagement</a>",
+        "Industry/Technology  Domain": "Customer Experience ",
+        "Role_SAP": "Consultant",
+        "Experience Level": "Entry Level ",
+        "Code": "C_C4H22"
+    },
+    {
+        "Name": "<a href=\"https://learning.sap.com/certifications?page=1\" target=\"_blank\">SAP Certified Professional - SAP Enterprise Architect</a>",
+        "Industry/Technology  Domain": "Technology",
+        "Role_SAP": "Architect",
+        "Experience Level": "Professional ",
+        "Code": "P_SAPEA"
+    }
+];
+        
+        function loadTable() {
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = "";
+
+            certifications.forEach(cert => {
+                let row = `<tr>
+                    <td>${cert.Name}</td>
+                    <td>${cert["Industry/Technology  Domain"]}</td>
+                    <td>${cert.Role_SAP}</td>
+                    <td>${cert["Experience Level"]}</td>
+                    <td>${cert.Code}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            populateFilters();
+        }
+
+        function populateFilters() {
+            let industries = new Set(["All"]);
+            let roles = new Set(["All"]);
+            let experienceLevels = new Set(["All"]);
+
+            certifications.forEach(cert => {
+                industries.add(cert["Industry/Technology  Domain"]);
+                roles.add(cert.Role_SAP);
+                experienceLevels.add(cert["Experience Level"]);
+            });
+
+            updateDropdown("industry", industries);
+            updateDropdown("role", roles);
+            updateDropdown("experience", experienceLevels);
+        }
+
+        function updateDropdown(id, options) {
+            let dropdown = document.getElementById(id);
+            dropdown.innerHTML = "";
+            options.forEach(option => {
+                let newOption = document.createElement("option");
+                newOption.value = option;
+                newOption.textContent = option;
+                dropdown.appendChild(newOption);
+            });
+        }
+
+        function filterTable() {
+            let selectedIndustry = document.getElementById("industry").value;
+            let selectedRole = document.getElementById("role").value;
+            let selectedExperience = document.getElementById("experience").value;
+
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = "";
+
+            certifications.forEach(cert => {
+                if ((selectedIndustry === "All" || cert["Industry/Technology  Domain"] === selectedIndustry) &&
+                    (selectedRole === "All" || cert.Role_SAP === selectedRole) &&
+                    (selectedExperience === "All" || cert["Experience Level"] === selectedExperience)) {
+                    
+                    let row = `<tr>
+                        <td>${cert.Name}</td>
+                        <td>${cert["Industry/Technology  Domain"]}</td>
+                        <td>${cert.Role_SAP}</td>
+                        <td>${cert["Experience Level"]}</td>
+                        <td>${cert.Code}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                }
+            });
+        }
+
+        window.onload = loadTable;
+    </script>
+
+</body>
+</html>
